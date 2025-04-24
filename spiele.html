@@ -1,0 +1,381 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>German Practice Quiz</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Custom styles for better look and feel */
+        body {
+            font-family: 'Inter', sans-serif; /* Use Inter font */
+            background-color: #f3f4f6; /* Light gray background */
+        }
+        .quiz-container {
+            max-width: 600px; /* Limit max width */
+            background-color: white;
+            border-radius: 12px; /* More rounded corners */
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* Softer shadow */
+            overflow: hidden; /* Ensure content stays within rounded corners */
+        }
+        .score-display {
+            background-color: #4f46e5; /* Indigo background for score */
+            color: white;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-weight: 600;
+        }
+        .question-text {
+            font-size: 1.25rem; /* Larger question text */
+            font-weight: 600;
+            color: #1f2937; /* Darker gray text */
+            margin-bottom: 1.5rem; /* More space below question */
+        }
+        .option-button {
+            background-color: #e5e7eb; /* Light gray button */
+            color: #374151; /* Medium gray text */
+            border: 1px solid #d1d5db; /* Slightly darker border */
+            padding: 12px 16px;
+            border-radius: 8px;
+            text-align: left;
+            transition: background-color 0.2s, border-color 0.2s, transform 0.1s;
+            width: 100%;
+            font-weight: 500;
+        }
+        .option-button:hover {
+            background-color: #d1d5db; /* Darker gray on hover */
+            border-color: #9ca3af;
+        }
+        .option-button:active {
+            transform: scale(0.98); /* Slight shrink on click */
+        }
+        .feedback-correct {
+            color: #16a34a; /* Green */
+            font-weight: 600;
+        }
+        .feedback-incorrect {
+            color: #dc2626; /* Red */
+            font-weight: 600;
+        }
+        .difficulty-level {
+            font-size: 0.9rem;
+            color: #6b7280; /* Gray text for difficulty */
+            font-weight: 500;
+        }
+        .final-score-container {
+            text-align: center;
+            padding: 2rem;
+        }
+        .restart-button {
+            background-color: #4f46e5; /* Indigo */
+            color: white;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: background-color 0.2s;
+        }
+        .restart-button:hover {
+            background-color: #4338ca; /* Darker indigo on hover */
+        }
+        /* Ensure buttons are easily tappable on mobile */
+        @media (max-width: 640px) {
+            .option-button {
+                padding: 16px; /* Larger padding for touch */
+            }
+        }
+    </style>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <div class="quiz-container w-full p-6 md:p-8">
+        <div id="quiz-active">
+            <div class="flex justify-between items-center mb-6">
+                <div class="difficulty-level">Difficulty: <span id="difficulty-display">1</span></div>
+                <div class="score-display">Score: <span id="current-score">0</span></div>
+                <div class="score-display">Top Score: <span id="top-score">0</span></div>
+            </div>
+
+            <div id="question-container" class="mb-6">
+                <p id="question-text" class="question-text">Loading question...</p>
+                <div id="options-container" class="space-y-3">
+                    </div>
+            </div>
+
+            <div id="feedback-container" class="mt-4 h-6 text-center">
+                </div>
+        </div>
+
+        <div id="quiz-end" class="hidden final-score-container">
+            <h2 class="text-2xl font-bold mb-4">Quiz Finished!</h2>
+            <p class="text-lg mb-2">Your final score: <span id="final-score" class="font-bold">0</span></p>
+            <p class="text-lg mb-6">Top score: <span id="final-top-score" class="font-bold">0</span></p>
+            <button id="restart-button" class="restart-button">Play Again</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Question Data ---
+        // Extracted and adapted from user's notes
+        // Difficulty: 1 (Easiest) to 4 (Hardest)
+        const questions = [
+            // Difficulty 1: Basic Vocab, Greetings, Simple Present Tense
+            { difficulty: 1, type: 'vocabulary', question: "What is 'Guten Tag' in English?", options: ["Goodbye", "Good day/Hello", "Good night", "Thank you"], correctAnswer: "Good day/Hello" },
+            { difficulty: 1, type: 'vocabulary', question: "What is 'Danke' in English?", options: ["Please", "Hello", "Thank you", "Sorry"], correctAnswer: "Thank you" },
+            { difficulty: 1, type: 'grammar-verbs', question: "Ich ____ Andrew. (heißen)", options: ["heiße", "heißt", "heißen", "heiß"], correctAnswer: "heiße" },
+            { difficulty: 1, type: 'grammar-verbs', question: "Wo ____ du? (wohnen)", options: ["wohne", "wohnst", "wohnt", "wohnen"], correctAnswer: "wohnst" },
+            { difficulty: 1, type: 'vocabulary', question: "Translate 'brother'", options: ["die Schwester", "der Vater", "der Bruder", "die Mutter"], correctAnswer: "der Bruder" },
+            { difficulty: 1, type: 'vocabulary', question: "Translate 'house'", options: ["die Wohnung", "das Haus", "das Zimmer", "die Stadt"], correctAnswer: "das Haus" },
+            { difficulty: 1, type: 'phrase', question: "How do you ask 'How are you?' informally?", options: ["Wie heißen Sie?", "Woher kommen Sie?", "Wie geht's?", "Was ist das?"], correctAnswer: "Wie geht's?" },
+
+            // Difficulty 2: Articles, Basic Plurals, Haben/Sein, Simple Sentences
+            { difficulty: 2, type: 'grammar-articles', question: "Article for 'Tisch' (table)?", options: ["der", "die", "das"], correctAnswer: "der" },
+            { difficulty: 2, type: 'grammar-articles', question: "Article for 'Lampe' (lamp)?", options: ["der", "die", "das"], correctAnswer: "die" },
+            { difficulty: 2, type: 'grammar-plurals', question: "Plural of 'das Buch' (book)?", options: ["die Buch", "die Buchs", "die Bücher", "die Buchen"], correctAnswer: "die Bücher" },
+            { difficulty: 2, type: 'grammar-verbs', question: "Wir ____ Hunger. (haben)", options: ["habe", "hast", "hat", "haben"], correctAnswer: "haben" },
+            { difficulty: 2, type: 'grammar-verbs', question: "Er ____ nach Berlin gefahren. (sein)", options: ["bin", "bist", "ist", "sind"], correctAnswer: "ist" },
+            { difficulty: 2, type: 'vocabulary', question: "Translate 'to eat'", options: ["trinken", "schlafen", "essen", "lesen"], correctAnswer: "essen" },
+            { difficulty: 2, type: 'grammar-prepositions', question: "Ich komme ____ Kenia.", options: ["in", "aus", "mit", "zu"], correctAnswer: "aus" },
+            { difficulty: 2, type: 'grammar-sentences', question: "Correct order: Deutsch / lerne / Ich", options: ["Lerne ich Deutsch.", "Deutsch lerne ich.", "Ich lerne Deutsch.", "Ich Deutsch lerne."], correctAnswer: "Ich lerne Deutsch." },
+
+            // Difficulty 3: Perfekt Tense, Dative Prepositions, Modal Verbs (Present), Separable Verbs
+            { difficulty: 3, type: 'grammar-verbs', question: "Perfekt: Ich habe das Buch ____. (lesen)", options: ["gelesen", "gelest", "liest", "lese"], correctAnswer: "gelesen" },
+            { difficulty: 3, type: 'grammar-verbs', question: "Perfekt: Sie hat Musik ____. (hören)", options: ["gehört", "gehören", "gehort", "hört"], correctAnswer: "gehört" },
+            { difficulty: 3, type: 'grammar-prepositions', question: "Ich fahre ____ dem Auto. (mit)", options: ["mit der", "mit das", "mit den", "mit dem"], correctAnswer: "mit dem" },
+            { difficulty: 3, type: 'grammar-prepositions', question: "Wir gehen ____ Arzt. (zu)", options: ["zum", "zur", "zu", "zu den"], correctAnswer: "zum" },
+            { difficulty: 3, type: 'grammar-verbs', question: "Du ____ Deutsch sprechen. (können)", options: ["kann", "kannst", "können", "könnt"], correctAnswer: "kannst" },
+            { difficulty: 3, type: 'grammar-verbs', question: "Ich ____ dich morgen ____. (anrufen)", options: ["rufe... an", "anrufe...", "an... rufe", "rufe an..."], correctAnswer: "rufe... an" },
+            { difficulty: 3, type: 'vocabulary', question: "What does 'die Rechnung' mean?", options: ["The recipe", "The bill/invoice", "The street", "The train station"], correctAnswer: "The bill/invoice" },
+            { difficulty: 3, type: 'grammar-cases', question: "Ich sehe ____ Mann. (der)", options: ["der", "den", "dem", "des"], correctAnswer: "den" }, // Accusative
+
+            // Difficulty 4: Präteritum (haben/sein/modals), Subordinate Clauses, Adjective Endings, Reflexive Verbs
+            { difficulty: 4, type: 'grammar-verbs', question: "Präteritum: Ich ____ gestern keine Zeit. (haben)", options: ["hatte", "habe", "hat", "hast"], correctAnswer: "hatte" },
+            { difficulty: 4, type: 'grammar-verbs', question: "Präteritum: Wir ____ im Kino. (sein)", options: ["sind", "seid", "waren", "wart"], correctAnswer: "waren" },
+            { difficulty: 4, type: 'grammar-verbs', question: "Präteritum: Er ____ nicht kommen. (können)", options: ["kann", "konnte", "könnte", "gekonnt"], correctAnswer: "konnte" },
+            { difficulty: 4, type: 'grammar-sentences', question: "Ich bleibe zu Hause, weil ich krank ____.", options: ["bin", "habe", "war", "werde"], correctAnswer: "bin" }, // Weil clause
+            { difficulty: 4, type: 'grammar-sentences', question: "Sie sagt, dass sie müde ____.", options: ["ist", "hat", "war", "wird"], correctAnswer: "ist" }, // Dass clause
+            { difficulty: 4, type: 'grammar-adjectives', question: "Das ist ein ____ Buch. (gut)", options: ["gut", "gute", "gutes", "guten"], correctAnswer: "gutes" }, // Indefinite article, neuter, nominative
+            { difficulty: 4, type: 'grammar-adjectives', question: "Ich habe den ____ Film gesehen. (neu)", options: ["neu", "neue", "neues", "neuen"], correctAnswer: "neuen" }, // Definite article, masculine, accusative
+            { difficulty: 4, type: 'grammar-verbs', question: "Wir treffen ____ im Park. (reflexive)", options: ["mich", "dich", "sich", "uns"], correctAnswer: "uns" }
+        ];
+
+        // --- Game State ---
+        let currentScore = 0;
+        let topScore = localStorage.getItem('germanQuizTopScore') || 0;
+        let currentQuestionIndex = 0; // Index within the filtered questions for the current level
+        let currentDifficulty = 1;
+        let questionsInCurrentDifficulty = [];
+        let correctAnswersInLevel = 0;
+        const correctAnswersNeededForNextLevel = 3; // How many correct answers to advance
+
+        // --- DOM Elements ---
+        const questionTextEl = document.getElementById('question-text');
+        const optionsContainerEl = document.getElementById('options-container');
+        const feedbackContainerEl = document.getElementById('feedback-container');
+        const currentScoreEl = document.getElementById('current-score');
+        const topScoreEl = document.getElementById('top-score');
+        const difficultyDisplayEl = document.getElementById('difficulty-display');
+        const quizActiveEl = document.getElementById('quiz-active');
+        const quizEndEl = document.getElementById('quiz-end');
+        const finalScoreEl = document.getElementById('final-score');
+        const finalTopScoreEl = document.getElementById('final-top-score');
+        const restartButton = document.getElementById('restart-button');
+
+        // --- Functions ---
+
+        // Fisher-Yates (Knuth) Shuffle algorithm
+        function shuffleArray(array) {
+            let currentIndex = array.length, randomIndex;
+            while (currentIndex !== 0) {
+                randomIndex = Math.floor(Math.random() * currentIndex);
+                currentIndex--;
+                [array[currentIndex], array[randomIndex]] = [
+                    array[randomIndex], array[currentIndex]];
+            }
+            return array;
+        }
+
+        function loadQuestionsForDifficulty(difficulty) {
+            questionsInCurrentDifficulty = questions.filter(q => q.difficulty === difficulty);
+            shuffleArray(questionsInCurrentDifficulty); // Shuffle questions for the level
+            currentQuestionIndex = 0; // Reset index for the new level
+            correctAnswersInLevel = 0; // Reset correct answer count for the level
+            difficultyDisplayEl.textContent = difficulty;
+        }
+
+        function loadQuestion() {
+            // Check if we need to load questions for the current difficulty
+            if (questionsInCurrentDifficulty.length === 0 || currentQuestionIndex >= questionsInCurrentDifficulty.length) {
+                 // Check if there are any questions at the current difficulty level at all
+                const availableQuestions = questions.filter(q => q.difficulty === currentDifficulty);
+                 if (availableQuestions.length === 0) {
+                    // No more questions at this level or higher levels exist
+                    endGame("Congratulations! You've completed all available questions!");
+                    return;
+                }
+                // Otherwise, load (or reload) questions for the current level
+                loadQuestionsForDifficulty(currentDifficulty);
+                 // Double-check if loading questions actually resulted in questions
+                if (questionsInCurrentDifficulty.length === 0) {
+                    endGame("No questions found for the current difficulty level.");
+                    return;
+                }
+            }
+
+
+            const question = questionsInCurrentDifficulty[currentQuestionIndex];
+
+            if (!question) {
+                 // This might happen if we exhausted a level and tried to load the next index
+                 // Let's try to advance difficulty or end game
+                 if (currentDifficulty < 4) { // Assuming max difficulty is 4
+                    currentDifficulty++;
+                    loadQuestionsForDifficulty(currentDifficulty);
+                    if(questionsInCurrentDifficulty.length > 0) {
+                        loadQuestion(); // Try loading the first question of the new level
+                    } else {
+                        endGame("You've completed all questions!");
+                    }
+                 } else {
+                    endGame("You've completed all questions!");
+                 }
+                return;
+            }
+
+
+            questionTextEl.textContent = question.question;
+            optionsContainerEl.innerHTML = ''; // Clear previous options
+            feedbackContainerEl.textContent = ''; // Clear previous feedback
+
+            // Shuffle options before displaying (optional but good practice)
+            const shuffledOptions = shuffleArray([...question.options]);
+
+            shuffledOptions.forEach(option => {
+                const button = document.createElement('button');
+                button.textContent = option;
+                button.classList.add('option-button', 'block', 'mb-2'); // Added block and mb-2
+                button.onclick = () => selectAnswer(option, question.correctAnswer);
+                optionsContainerEl.appendChild(button);
+            });
+        }
+
+        function selectAnswer(selectedOption, correctAnswer) {
+            // Disable buttons temporarily
+            const buttons = optionsContainerEl.querySelectorAll('button');
+            buttons.forEach(button => button.disabled = true);
+
+            if (selectedOption === correctAnswer) {
+                feedbackContainerEl.textContent = "Richtig! (Correct!)";
+                feedbackContainerEl.className = 'feedback-correct text-center h-6'; // Added text-center
+                currentScore++;
+                correctAnswersInLevel++;
+                updateScore();
+
+                // Check for difficulty increase
+                if (correctAnswersInLevel >= correctAnswersNeededForNextLevel && currentDifficulty < 4) { // Check against max difficulty
+                     // Check if there are actually questions in the next level
+                    const nextLevelQuestions = questions.filter(q => q.difficulty === currentDifficulty + 1);
+                    if (nextLevelQuestions.length > 0) {
+                        currentDifficulty++;
+                        loadQuestionsForDifficulty(currentDifficulty); // Load new questions immediately
+                        feedbackContainerEl.textContent = `Richtig! Level Up to ${currentDifficulty}!`;
+                    } else {
+                         // Stay at current level if next level has no questions
+                        currentQuestionIndex++; // Just move to next question in current level
+                    }
+                } else {
+                    currentQuestionIndex++; // Move to next question in current level
+                }
+
+                // Load next question after a short delay
+                setTimeout(() => {
+                     if (currentQuestionIndex >= questionsInCurrentDifficulty.length) {
+                        // If we exhausted the current level after a correct answer,
+                        // and didn't level up (either max level or next level empty),
+                        // try loading the next level explicitly or end game.
+                        if (currentDifficulty < 4 && questions.filter(q => q.difficulty === currentDifficulty + 1).length > 0) {
+                            currentDifficulty++;
+                            loadQuestionsForDifficulty(currentDifficulty);
+                            loadQuestion();
+                        } else {
+                             endGame("You've completed all questions for this difficulty!");
+                        }
+
+                    } else {
+                       loadQuestion();
+                    }
+                }, 1200); // 1.2 second delay
+
+            } else {
+                feedbackContainerEl.textContent = `Falsch. Richtig ist: ${correctAnswer}`;
+                feedbackContainerEl.className = 'feedback-incorrect text-center h-6'; // Added text-center
+                // End the game on incorrect answer
+                 setTimeout(() => {
+                    endGame("Incorrect answer. Try again!");
+                 }, 1500); // Slightly longer delay for incorrect
+            }
+        }
+
+        function updateScore() {
+            currentScoreEl.textContent = currentScore;
+        }
+
+        function updateTopScore() {
+            if (currentScore > topScore) {
+                topScore = currentScore;
+                localStorage.setItem('germanQuizTopScore', topScore);
+                topScoreEl.textContent = topScore; // Update display immediately
+            }
+        }
+
+        function startGame() {
+            currentScore = 0;
+            currentDifficulty = 1;
+            correctAnswersInLevel = 0;
+            topScore = localStorage.getItem('germanQuizTopScore') || 0; // Load top score
+            topScoreEl.textContent = topScore;
+            updateScore();
+            quizActiveEl.classList.remove('hidden');
+            quizEndEl.classList.add('hidden');
+            loadQuestionsForDifficulty(currentDifficulty);
+            if (questionsInCurrentDifficulty.length > 0) {
+                 loadQuestion();
+            } else {
+                endGame("No questions available to start the game."); // Handle case where no questions exist at all
+            }
+
+        }
+
+         function endGame(message) {
+            updateTopScore(); // Update top score before showing end screen
+            quizActiveEl.classList.add('hidden');
+            quizEndEl.classList.remove('hidden');
+            finalScoreEl.textContent = currentScore;
+            finalTopScoreEl.textContent = topScore; // Show potentially updated top score
+            // Optionally display the end game message
+            const endMessageEl = document.createElement('p');
+            endMessageEl.textContent = message;
+            endMessageEl.classList.add('text-red-600', 'font-semibold', 'mb-4'); // Style the message
+            // Insert the message before the restart button if needed
+            quizEndEl.insertBefore(endMessageEl, restartButton);
+        }
+
+
+        // --- Event Listeners ---
+        restartButton.addEventListener('click', () => {
+             // Remove any previous end game messages
+            const existingMessages = quizEndEl.querySelectorAll('p.text-red-600');
+            existingMessages.forEach(msg => msg.remove());
+            startGame();
+        });
+
+
+        // --- Initial Load ---
+        startGame();
+
+    </script>
+
+</body>
+</html>
