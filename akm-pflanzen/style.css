@@ -1,0 +1,230 @@
+/* --- //AKM-Pflantzen CSS --- */
+
+/* Basic Reset & Body Defaults */
+html {
+    box-sizing: border-box;
+}
+*, *:before, *:after {
+    box-sizing: inherit;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Atkinson Hyperlegible', sans-serif; /* Apply Atkinson Hyperlegible */
+    line-height: 1.7; /* Slightly increased line height for readability */
+    background-color: #f8f9fa; /* Very light grey background */
+    color: #343a40; /* Dark grey text for good contrast */
+}
+
+/* Header Styling */
+header {
+    background-color: #4a8a5f; /* A subtle, slightly desaturated green */
+    color: #ffffff; /* White text */
+    padding: 1.5rem 1rem; /* Slightly more padding */
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+header h1 {
+    margin: 0 0 0.25rem 0;
+    font-weight: 700; /* Bold weight */
+}
+
+header h1 a {
+    color: #ffffff;
+    text-decoration: none;
+    font-size: 2rem; /* Slightly larger site title */
+}
+
+header p {
+    margin: 0;
+    font-size: 1rem;
+    color: #e8f5e9; /* Lighter text color for subtitle */
+}
+
+/* Main Content Area */
+main {
+    max-width: 850px; /* Slightly narrower for better readability */
+    margin: 2.5rem auto; /* More space above/below */
+    padding: 2rem; /* More internal padding */
+    background-color: #ffffff; /* White content background */
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.08); /* Softer shadow */
+    border-radius: 8px; /* Slightly more rounded corners */
+}
+
+/* Headings */
+h2 {
+    color: #2e6031; /* Darker green for main section headings */
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 2rem; /* More space below H2 */
+    font-weight: 700;
+}
+
+h3 {
+    color: #4a8a5f; /* Use the header green for subheadings */
+    margin-bottom: 1rem; /* More space below H3 */
+    font-weight: 700;
+    border-bottom: 1px solid #e0e0e0; /* Subtle line under H3 */
+    padding-bottom: 0.5rem;
+}
+
+/* Links */
+a {
+    color: #3a7d3e; /* A slightly brighter green for links */
+    text-decoration: none;
+    transition: color 0.2s ease;
+}
+
+a:hover, a:focus {
+    color: #2e6031; /* Darker green on hover/focus */
+    text-decoration: underline;
+}
+
+/* --- Index Page Specific --- */
+.plant-list {
+    list-style: none;
+    padding: 0;
+    display: grid; /* Use Grid for layout */
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); /* Responsive grid */
+    gap: 1.5rem; /* Space between items */
+}
+
+.plant-list li {
+    background-color: #ffffff; /* Keep items white */
+    border-radius: 8px;
+    overflow: hidden; /* Keep image corners rounded */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    border: 1px solid #e9ecef; /* Subtle border */
+}
+
+.plant-list li:hover {
+    transform: translateY(-4px); /* Slight lift on hover */
+    box-shadow: 0 4px 10px rgba(0,0,0,0.12);
+}
+
+.plant-list a {
+    display: block; /* Make the whole area clickable */
+    text-decoration: none;
+    color: #2e6031; /* Dark green text */
+    text-align: center;
+    padding-bottom: 1rem; /* Padding below text */
+}
+
+.plant-list a:hover, .plant-list a:focus {
+    text-decoration: none; /* No underline for these links */
+    color: #4a8a5f; /* Lighter green on hover */
+}
+
+.plant-list .thumbnail {
+    display: block;
+    width: 100%; /* Make image fill width */
+    height: 160px; /* Fixed thumbnail height */
+    object-fit: cover; /* Cover the area without distortion */
+    margin-bottom: 0.8rem; /* Space between image and text */
+    border-bottom: 1px solid #e9ecef; /* Line below image */
+}
+
+.plant-list span {
+    font-weight: 700; /* Make plant names bold */
+    padding: 0 0.5rem; /* Padding for text */
+    display: block; /* Ensure span takes block space */
+}
+
+
+/* --- Plant Detail Page Specific --- */
+.plant-detail section {
+    margin-bottom: 2.5rem; /* More space between sections */
+    padding-bottom: 1.5rem;
+    border-bottom: 1px solid #eeeeee; /* Lighter separator */
+}
+
+.plant-detail section:last-child {
+    border-bottom: none; /* No border on the last section */
+    margin-bottom: 0; /* No margin on last section */
+}
+
+.plant-image {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.plant-image img {
+    max-width: 80%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1); /* Slightly more pronounced shadow */
+    border: 1px solid #dee2e6; /* Light border around image */
+}
+
+/* Styling for Care & Fun Facts Lists */
+.plant-care ul,
+.plant-fun-facts ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.plant-care li,
+.plant-fun-facts li {
+    margin-bottom: 1rem; /* More space between list items */
+    padding-left: 2em; /* Indent list items */
+    position: relative;
+}
+
+.plant-care li::before,
+.plant-fun-facts li::before {
+    content: '🌿'; /* Leaf emoji bullet */
+    position: absolute;
+    left: 0;
+    top: 1px; /* Adjust vertical position */
+    color: #4a8a5f; /* Use the accent green */
+    font-size: 1.1em;
+}
+
+.plant-care strong {
+    font-weight: 700; /* Ensure strong tag is bold */
+    color: #343a40; /* Dark text for emphasis */
+}
+
+/* Toxicity Section Styling (Keep contrast for warnings) */
+.plant-toxicity h3 {
+    color: #c82333; /* Standard warning red */
+}
+.plant-toxicity p strong { /* Style only the "Caution:" part */
+     color: #c82333;
+}
+
+/* Specific styling for the paragraph containing the warning */
+.plant-toxicity p {
+    border-left: 5px solid #dc3545; /* Red border */
+    padding: 1rem 1rem 1rem 1.5rem; /* More padding */
+    background-color: #f8d7da; /* Light red background */
+    color: #721c24; /* Dark red text */
+    margin-top: 1rem;
+    border-radius: 4px;
+}
+
+/* Styling for Non-Toxic plants */
+.plant-detail section.plant-toxicity:not(:has(strong)) h3 { /* Target H3 if no <strong> (assumes safe plants don't use it) */
+   color: #28a745; /* Standard success green */
+}
+.plant-detail section.plant-toxicity:not(:has(strong)) p { /* Target p if no <strong> */
+   border-left-color: #28a745; /* Green border */
+   background-color: #d4edda; /* Light green background */
+   color: #155724; /* Dark green text */
+}
+
+
+/* Footer Styling */
+footer {
+    text-align: center;
+    margin-top: 3rem;
+    padding: 1.5rem;
+    font-size: 0.9em;
+    color: #6c757d; /* Medium grey text */
+    border-top: 1px solid #e9ecef; /* Light top border */
+}
+
+/* --- End of CSS --- */
